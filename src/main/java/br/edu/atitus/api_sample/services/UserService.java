@@ -28,19 +28,21 @@ public class UserService implements UserDetailsService{
 		if (user.getName() == null || user.getName().isEmpty())
 			throw new Exception("Nome inválido");
 		user.setName(user.getName().trim());
-		
-		
-		if (user.getEmail() == null || user.getEmail().isEmpty())
+
+
+		String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+		if (user.getEmail() == null || user.getEmail().isEmpty() || !user.getEmail().matches(emailRegex)) {
 			throw new Exception("E-mail inválido");
+		}
 		user.setEmail(user.getEmail().trim().toLowerCase());
-		// TODO Validar o e-mail (texto@texto.texto) => REGEX
-		
-		if (user.getPassword() == null 
+
+
+		String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
+		if (user.getPassword() == null
 				|| user.getPassword().isEmpty()
-				|| user.getPassword().length() < 8)
+				|| !user.getPassword().matches(passwordRegex))
 			throw new Exception("Password inválido");
-		// TODO Validar a força da senha (Caracteres maiúsculos, minúsculos e númerais)
-		
+
 		if (user.getType() == null)
 			throw new Exception("Tipo de usuário inválido");
 		

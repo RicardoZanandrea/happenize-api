@@ -58,5 +58,4 @@ public class PointController {
 		String message = ex.getMessage().replaceAll("\r\n", "");
 		return ResponseEntity.badRequest().body(message);
 	}
-	
 }
