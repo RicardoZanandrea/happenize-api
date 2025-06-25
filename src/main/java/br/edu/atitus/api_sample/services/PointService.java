@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import br.edu.atitus.api_sample.dtos.PointDTO;
 import br.edu.atitus.api_sample.entities.PointEntity;
 import br.edu.atitus.api_sample.entities.UserEntity;
 import br.edu.atitus.api_sample.repositories.PointRepository;
@@ -51,6 +52,38 @@ public class PointService {
 			throw new Exception("Você não tem permissão para apagar este registro");
 		
 		repository.deleteById(id);
+	}
+	
+	public PointEntity updateById(UUID id, PointDTO dto) throws Exception {
+		var point = repository.findById(id)
+				.orElseThrow(() -> new Exception("Não existe ponto cadastrado com este ID"));
+		
+		UserEntity userAuth = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		if (!point.getUser().getId().equals(userAuth.getId()))
+			throw new Exception("Você não tem permissão para atualizar este registro");
+		
+		// Validações do DTO
+		if (dto.description() == null || dto.description().isEmpty())
+			throw new Exception("Descrição Inválida");
+		
+		if (dto.latitude() < -90 || dto.latitude() > 90)
+			throw new Exception("Latitude Inválida");
+		
+		if (dto.longitude() < -180 || dto.longitude() > 180)
+			throw new Exception("Longitude Inválida");
+		
+		// Atualizar os dados
+		point.setDescription(dto.description().trim());
+		point.setLatitude(dto.latitude());
+		point.setLongitude(dto.longitude());
+		
+		return repository.save(point);
+	}
+	
+	public List<PointEntity> findByUser() {
+		UserEntity userAuth = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return repository.findByUser(userAuth);
 	}
 	
 	public List<PointEntity> findAll() {

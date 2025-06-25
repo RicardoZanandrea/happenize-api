@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,8 +50,14 @@ public class PointController {
 
 	@GetMapping
 	public ResponseEntity<List<PointEntity>> findAll(){
-		var lista = service.findAll();
+		var lista = service.findByUser();
 		return ResponseEntity.ok(lista);
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<PointEntity> update(@PathVariable UUID id, @RequestBody PointDTO dto) throws Exception {
+		PointEntity updatedPoint = service.updateById(id, dto);
+		return ResponseEntity.ok(updatedPoint);
 	}
 	
 	@ExceptionHandler(value = Exception.class)
